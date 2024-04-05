@@ -18,7 +18,7 @@
  *
  */
 function getCurrentFunctionName() {
-  throw new Error('Not implemented');
+  return getCurrentFunctionName.name;
 }
 
 /**
@@ -32,8 +32,9 @@ function getCurrentFunctionName() {
  *   getFunctionBody(hiHello) => "function hiHello() { console.log('hello world'); }"
  *
  */
-function getFunctionBody(/* func */) {
-  throw new Error('Not implemented');
+function getFunctionBody(func) {
+  if (!func) return '';
+  return func.valueOf();
 }
 
 /**
@@ -50,8 +51,11 @@ function getFunctionBody(/* func */) {
  *  ]) => [0, 1, 2]
  *
  */
-function getArgumentsCount(/* funcs */) {
-  throw new Error('Not implemented');
+function getArgumentsCount(funcs) {
+  return funcs.reduce((arr, fn) => {
+    arr.push(fn.length);
+    return arr;
+  }, []);
 }
 
 /**
@@ -70,8 +74,10 @@ function getArgumentsCount(/* funcs */) {
  *   power05(16) => 4
  *
  */
-function getPowerFunction(/* exponent */) {
-  throw new Error('Not implemented');
+function getPowerFunction(exponent) {
+  return function f(n) {
+    return n ** exponent;
+  };
 }
 
 /**
@@ -87,8 +93,18 @@ function getPowerFunction(/* exponent */) {
  *   getPolynom(8)     => y = 8
  *   getPolynom()      => null
  */
-function getPolynom() {
-  throw new Error('Not implemented');
+function getPolynom(a, b, c) {
+  const n = arguments.length;
+  switch (n) {
+    case 1:
+      return () => a;
+    case 2:
+      return (x) => a * x + b;
+    case 3:
+      return (x) => a * x ** 2 + b * x + c;
+    default:
+      return null;
+  }
 }
 
 /**
@@ -105,8 +121,15 @@ function getPolynom() {
  *   ...
  *   memoizer() => the same random number  (next run, returns the previous cached result)
  */
-function memoize(/* func */) {
-  throw new Error('Not implemented');
+function memoize(func) {
+  const cache = new Map();
+  return function f() {
+    if (cache.has(func.name)) {
+      return cache.get(func.name);
+    }
+    cache.set(func.name, func());
+    return cache.get(func.name);
+  };
 }
 
 /**
@@ -124,8 +147,18 @@ function memoize(/* func */) {
  * }, 2);
  * retryer() => 2
  */
-function retry(/* func, attempts */) {
-  throw new Error('Not implemented');
+function retry(func, attempts) {
+  return function f() {
+    let at = 0;
+    while (at < attempts) {
+      try {
+        return func();
+      } catch (e) {
+        at += 1;
+      }
+    }
+    return 123;
+  };
 }
 
 /**
@@ -151,8 +184,24 @@ function retry(/* func, attempts */) {
  * cos(3.141592653589793) ends
  *
  */
-function logger(/* func, logFunc */) {
-  throw new Error('Not implemented');
+function logger(func, logFunc) {
+  return function f(...x) {
+    const a = x
+      .reduce((arr, arg) => {
+        if (arg instanceof Array) {
+          const b = JSON.stringify(arg);
+          arr.push(b);
+        } else {
+          arr.push(arg);
+        }
+        return arr;
+      }, [])
+      .join(',');
+    logFunc(`${func.name}(${a}) starts`);
+    const res = func(...x);
+    logFunc(`${func.name}(${a}) ends`);
+    return res;
+  };
 }
 
 /**
@@ -168,8 +217,11 @@ function logger(/* func, logFunc */) {
  *   partialUsingArguments(fn, 'a','b','c')('d') => 'abcd'
  *   partialUsingArguments(fn, 'a','b','c','d')() => 'abcd'
  */
-function partialUsingArguments(/* fn, ...args1 */) {
-  throw new Error('Not implemented');
+function partialUsingArguments(fn, ...args1) {
+  return (...args2) => {
+    const args = [...args1, ...args2];
+    return fn(...args);
+  };
 }
 
 /**
@@ -189,8 +241,13 @@ function partialUsingArguments(/* fn, ...args1 */) {
  *   getId4() => 7
  *   getId10() => 11
  */
-function getIdGeneratorFunction(/* startFrom */) {
-  throw new Error('Not implemented');
+function getIdGeneratorFunction(startFrom) {
+  let num = startFrom;
+  return () => {
+    const id = num;
+    num += 1;
+    return id;
+  };
 }
 
 module.exports = {
